@@ -3,115 +3,112 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>कार्यक्रम - अवधूत चिंतन गोशाळा</title>
+<title>सदस्य - अवधूत चिंतन गोशाळा</title>
 <link rel="stylesheet" href="style.css" />
-
 <style>
-.events-grid {
+.members-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 1.5rem;
   padding: 2rem 1rem;
   max-width: 1200px;
   margin: 0 auto;
 }
-.event-card {
+.member-card {
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   overflow: hidden;
+  text-align: center;
+  padding-bottom: 1rem;
 }
-.event-img {
+.member-img {
   width: 100%;
-  height: 180px;
+  height: 200px;
   background: #FFF3E0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 4rem;
+  font-size: 5rem;
 }
-.event-img img { width: 100%; height: 180px; object-fit: cover; }
-.event-info { padding: 1rem; }
-.event-title { font-size: 1.1rem; font-weight: 700; color: #333; margin-bottom: 0.5rem; }
-.event-date { font-size: 0.9rem; color: #FF6F00; font-weight: 600; margin-bottom: 0.3rem; }
-.event-location { font-size: 0.85rem; color: #666; margin-bottom: 0.3rem; }
-.event-time { font-size: 0.85rem; color: #888; margin-bottom: 0.5rem; }
-.event-desc { font-size: 0.85rem; color: #666; margin-bottom: 0.75rem; }
-
-.btn-register {
-  width: 100%;
-  padding: 0.6rem;
-  border: none;
-  border-radius: 8px;
-  background: #FF6F00;
+.member-img img { width: 100%; height: 200px; object-fit: cover; }
+.member-info { padding: 1rem; }
+.member-name { font-size: 1.1rem; font-weight: 700; color: #333; margin-bottom: 0.4rem; }
+.member-phone { font-size: 0.9rem; color: #FF6F00; font-weight: 600; margin-bottom: 0.3rem; }
+.member-address { font-size: 0.85rem; color: #666; line-height: 1.5; }
+.loading { text-align: center; padding: 3rem; color: #999; font-size: 1rem; }
+.page-hero {
+  background: linear-gradient(135deg, #E05A00, #FF8C3A);
   color: white;
-  font-weight: 700;
-  font-size: 0.95rem;
-  cursor: pointer;
-  margin-top: 0.5rem;
+  text-align: center;
+  padding: 3rem 1rem 2.5rem;
 }
-.btn-register:disabled { background: #ccc; cursor: not-allowed; }
-.btn-register.full { background: #C62828; }
-
-.modal-overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5);
-  z-index: 1000;
-  align-items: center;
-  justify-content: center;
-}
-.modal-overlay.open { display: flex; }
-.modal {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  width: 90%;
-  max-width: 400px;
-}
-.modal-btns { display: flex; gap: 0.5rem; margin-top: 1rem; }
-.btn-confirm {
-  flex: 1; padding: 0.6rem;
-  background: #FF6F00; color: white;
-  border: none; border-radius: 8px;
-}
-.btn-cancel {
-  flex: 1; padding: 0.6rem;
-  background: #eee; border: none;
-}
-.loading { text-align: center; padding: 3rem; color: #999; }
-.page-title { text-align: center; padding: 2rem 1rem 0.5rem; font-size: 1.8rem; font-weight: 800; color: #FF6F00; }
+.page-hero h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 900; margin-bottom: 0.5rem; }
+.page-hero p { opacity: 0.9; font-size: 1rem; }
 #toast { position: fixed; bottom: 2rem; right: 2rem; background: #333; color: white; padding: 0.8rem 1.5rem; border-radius: 8px; display: none; z-index: 999; }
 </style>
 </head>
 
 <body>
 
-<h1 class="page-title">📅 आमचे सदस्य</h1>
-
-<div id="eventsContainer" class="events-grid">
-  <div class="loading">⏳ लोड होत आहेत...</div>
-</div>
-
-<!-- MODAL -->
-<div class="modal-overlay" id="regModal">
-  <div class="modal">
-    
-    <p id="modelmemberName"></p>
-
-    <input type="text" id="regName" placeholder="नाव" />
-    <input type="tel" id="regPhone" placeholder="फोन" />
-    <input type="text" id="regCity" placeholder="शहर" />
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">🪔 <span>अवधूत चिंतन गोशाळा</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">मुख्यपृष्ठ</a></li>
+      <li><a href="events.html">कार्यक्रम</a></li>
+      <li><a href="products.html">उत्पादने</a></li>
+      <li><a href="reviews.html">अभिप्राय</a></li>
+      <li><a href="action.html" class="active">सदस्य</a></li>
+      <li><a href="admin.html">Admin</a></li>
+    </ul>
+    <button class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></button>
   </div>
+</nav>
+
+<div class="page-hero">
+  <h1>👥 आमचे सदस्य</h1>
+  <p>अवधूत चिंतन गोशाळा संस्थेचे सदस्य</p>
 </div>
+
+<div id="membersContainer" class="members-grid">
+  <div class="loading" style="grid-column:1/-1;">⏳ लोड होत आहे...</div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo">🪔 अवधूत चिंतन गोशाळा निर्मित प्रॉडक्ट</div>
+    </div>
+    <div>
+      <h4>द्रुत दुवे</h4>
+      <ul>
+        <li><a href="index.html">मुख्यपृष्ठ</a></li>
+        <li><a href="products.html">उत्पादने</a></li>
+        <li><a href="events.html">कार्यक्रम</a></li>
+        <li><a href="reviews.html">अभिप्राय</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>संपर्क</h4>
+      <ul>
+        <li><a href="https://wa.me/91xxxxxxxxxx">📱 WhatsApp: +91 xxxxxxxxxx</a></li>
+        <li><a href="#">📍 अहिल्यानगर, महाराष्ट्र</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 अवधूत चिंतन गोशाळा निर्मित प्रॉडक्ट. सर्व हक्क राखीव.</div>
+</footer>
 
 <div id="toast"></div>
 
+<script>
+function toggleNav() { document.getElementById('navLinks').classList.toggle('open'); }
+</script>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, increment, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCm7G8W2EM2B9nNvujP8SQQht7HHkQYqLA",
@@ -125,83 +122,40 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-let currentEventId = "";
-let currentEventName = "";
+async function loadMembers() {
+  const container = document.getElementById('membersContainer');
+  try {
+    const snap = await getDocs(collection(db, 'sadasy'));
 
-/* 🔥 NEW: DATE CHECK */
-function isEventPast(dateStr) {
-  if (!dateStr) return false;
+    if (snap.empty) {
+      container.innerHTML = '<div class="loading" style="grid-column:1/-1;">📭 सध्या कोणतेही सदस्य नाहीत.</div>';
+      return;
+    }
 
-  const today = new Date();
-  const eventDate = new Date(dateStr);
+    let html = '';
+    snap.forEach(d => {
+      const s = d.data();
+      html += `
+        <div class="member-card">
+          <div class="member-img">
+            ${s.image ? `<img src="${s.image}" alt="${s.name}" />` : '👤'}
+          </div>
+          <div class="member-info">
+            <div class="member-name">${s.name}</div>
+            <div class="member-phone">📱 ${s.phone}</div>
+            ${s.address ? `<div class="member-address">📍 ${s.address}</div>` : ''}
+          </div>
+        </div>`;
+    });
 
-  today.setHours(0,0,0,0);
-  eventDate.setHours(0,0,0,0);
-
-  return eventDate < today;
-}
-
-/* LOAD EVENTS */
-async function loadEvents() {
-  const container = document.getElementById('eventsContainer');
-
-  const snap = await getDocs(collection(db, 'events'));
-
-  if (snap.empty) {
-    container.innerHTML = "No events";
-    return;
+    container.innerHTML = html;
+  } catch (err) {
+    container.innerHTML = '<div class="loading" style="grid-column:1/-1;">❌ लोड होण्यात अडचण आली.</div>';
+    console.error(err);
   }
-
-  let events = [];
-  snap.forEach(d => events.push({ id: d.id, ...d.data() }));
-
-  events.sort((a,b) => new Date(a.date) - new Date(b.date));
-
-  container.innerHTML = events.map(e => {
-
-    const totalSeats = e.seats || 0;
-    const registeredSeats = e.registeredSeats || 0;
-    const availableSeats = totalSeats - registeredSeats;
-
-    const isFull = totalSeats > 0 && availableSeats <= 0;
-    const isPast = isEventPast(e.date);
-    const hasSeats = totalSeats > 0;
-    const percent = hasSeats ? Math.min((registeredSeats / totalSeats) * 100, 100) : 0;
-
-    return `
-      <div class="member-card">
-        <div class="member-img">
-          ${e.image ? `<img src="${e.image}">` : "📅"}
-        </div>
-
-        
-      </div>
-    `;
-  }).join('');
 }
 
-/* MODAL */
-window.openModal = (id,name) => {
-  currentEventId = id;
-  currentEventName = name;
-  document.getElementById('regModal').classList.add('open');
-};
-
-window.closeModal = () => {
-  document.getElementById('regModal').classList.remove('open');
-};
-
-
-  await updateDoc(doc(db,"member",currentEventId),{
-    registeredSeats: increment(1)
-  });
-
-  closeModal();
-  loadEvents();
-};
-
-loadEvents();
+loadMembers();
 </script>
-
 </body>
 </html>
