@@ -418,15 +418,15 @@ async function loadEvents() {
       <td style="display:flex; gap:0.5rem;">
 
   <button class="btn-edit"
-    onclick="editEvents()">
+    onclick="editEvents('${d.id}','${e.title}',
+    '${e.date}',' ${e.time || ''}',
+    '${e.location || ''}',
+    '${e.type || ''}')">
     Edit
     </button>
-      <td>${e.image ? `<img src="${e.image}" class="product-img" />` : '📅'}</td>
-      <td><strong>${e.title}</strong></td>
-      <td>${e.date} ${e.time || ''}</td>
-      <td>${e.location || ''}</td>
-      <td>${e.type || ''}</td>
-      <td><button class="btn-danger" onclick="deleteEvent('${d.id}')">🗑️ काढा</button></td>
+      
+    <button class="btn-danger" onclick="deleteEvent('${d.id}')">🗑️ काढा</button>
+    </td>
     </tr>`;
   });
   html += '</tbody></table>';
