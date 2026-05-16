@@ -91,6 +91,7 @@ td { padding: 0.6rem; border-bottom: 1px solid #eee; vertical-align: middle; }
 <button class="admin-tab active" onclick="showTab('products', this)">🛍️ उत्पादने</button>
 <button class="admin-tab" onclick="showTab('events', this)">📅 कार्यक्रम</button>
 <button class="admin-tab" onclick="showTab('sadasy', this)">👥 सदस्य</button>
+<button class="admin-tab" onclick="showTab('temples', this)">🛕 मंदिर परिसर</button>
 <button class="admin-tab" onclick="showTab('reviews', this)">⭐ अभिप्राय</button>
 <button class="admin-tab" onclick="showTab('udisht', this)">🎯 उद्दिष्टे</button>
 </div>
@@ -196,6 +197,28 @@ td { padding: 0.6rem; border-bottom: 1px solid #eee; vertical-align: middle; }
 <button class="btn-saffron" id="sSaveBtn" onclick="saveSadasy()">💾 सदस्य जोडा</button>
 <h3 style="color:#FF6F00; margin:1.5rem 0 1rem;">📋 सदस्य यादी</h3>
 <div id="sadasyList"></div>
+</div>
+<!-- TEMPLES TAB -->
+<div id="tab-temples" class="admin-section admin-card">
+<h3 style="color:#FF6F00; margin-bottom:1rem;">🛕 नवीन मंदिर जोडा</h3>
+<div class="form-row"><label>मंदिराचे नाव *</label><input type="text" id="tName" placeholder="उदा. श्री गणेश मंदिर" /></div>
+<div class="form-row"><label>वर्णन</label><textarea id="tDesc" placeholder="मंदिराचे वर्णन"></textarea></div>
+<div class="form-row">
+  <label>📷 मंदिराचा फोटो</label>
+  <div class="photo-upload-box" id="tPhotoBox">
+    <input type="file" id="tPhotoFile" accept="image/*" onchange="uploadTemplePhoto(this)" />
+    <div style="font-size:2rem;">🛕</div>
+    <div style="font-weight:600; color:#FF6F00;">फोटो निवडा</div>
+    <div style="font-size:0.8rem; color:#999; margin-top:0.3rem;">Gallery मधून JPG, PNG निवडा</div>
+  </div>
+  <div class="upload-progress" id="tUploadProgress"><div class="upload-progress-bar" id="tProgressBar"></div></div>
+  <div class="upload-status" id="tUploadStatus"></div>
+  <img id="tImagePreview" class="event-img-preview" />
+  <input type="hidden" id="tImage" />
+</div>
+<button class="btn-saffron" id="tSaveBtn" onclick="saveTemple()">💾 मंदिर जोडा</button>
+<h3 style="color:#FF6F00; margin:1.5rem 0 1rem;">📋 मंदिर यादी</h3>
+<div id="templesList"></div>
 </div>
 
 <!-- REVIEWS TAB -->
@@ -483,6 +506,56 @@ window.deleteReview = async (id) => {
   await deleteDoc(doc(db, 'reviews', id));
   showToast('🗑️ अभिप्राय काढला!');
   loadReviews();
+};
+
+// ===== TEMPLES =====
+window.uploadTemplePhoto = (input) => {
+  uploadPhoto(input.files[0], 'temples', 'tProgressBar', 'tUploadProgress', 'tUploadStatus', 'tImagePreview', 'tImage', 'tSaveBtn');
+};
+
+window.saveTemple = async () => {
+  const name = document.getElementById('tName').value.trim();
+  if (!name) { alert('मंदिराचे नाव आवश्यक आहे!'); return; }
+  await addDoc(collection(db, 'temples'), {
+    name,
+    desc: document.getElementById('tDesc').value,
+    image: document.getElementById('tImage').value,
+    createdAt: new Date()
+  });
+  showToast('✅ मंदिर जोडले!');
+  document.getElementById('tName').value = '';
+  document.getElementById('tDesc').value = '';
+  document.getElementById('tImage').value = '';
+  document.getElementById('tImagePreview').style.display = 'none';
+  document.getElementById('tUploadProgress').style.display = 'none';
+  document.getElementById('tUploadStatus').style.display = 'none';
+  document.getElementById('tPhotoFile').value = '';
+  loadTemples();
+};
+
+async function loadTemples() {
+  const snap = await getDocs(collection(db, 'temples'));
+  const div = document.getElementById('templesList');
+  if (snap.empty) { div.innerHTML = '<p style="color:#999;">कोणतेही मंदिर नाही.</p>'; return; }
+  let html = '<table><thead><tr><th>फोटो</th><th>नाव</th><th>वर्णन</th><th>कृती</th></tr></thead><tbody>';
+  snap.forEach(d => {
+    const t = d.data();
+    html += `<tr>
+      <td>${t.image ? `<img src="${t.image}" class="product-img" />` : '🛕'}</td>
+      <td><strong>${t.name}</strong></td>
+      <td style="font-size:0.85rem;color:#666;">${t.desc?.substring(0,50) || ''}</td>
+      <td><button class="btn-danger" onclick="deleteTemple('${d.id}')">🗑️ काढा</button></td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  div.innerHTML = html;
+}
+
+window.deleteTemple = async (id) => {
+  if (!confirm('हे मंदिर काढायचे आहे का?')) return;
+  await deleteDoc(doc(db, 'temples', id));
+  showToast('🗑️ मंदिर काढले!');
+  loadTemples();
 };
 
 // ===== SADASY =====
