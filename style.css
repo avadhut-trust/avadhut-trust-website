@@ -82,7 +82,7 @@ nav {
   background: linear-gradient(135deg, var(--saffron) 0%, #FF9030 100%);
   color: white;
   text-align: center;
-  padding: -1rem 1.5rem 2rem;
+  padding: -2rem 1.5rem 2rem;
   position: relative;
   overflow: hidden;
 }
