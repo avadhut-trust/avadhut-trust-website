@@ -49,11 +49,12 @@ nav {
   text-decoration: none;
   letter-spacing: 0.5px;
 }
-.nav-logo span { opacity: 0.8; font-weight: 400; font-size: 1rem; margin-left: 6px; }
+.nav-logo span { opacity: 0.8; font-weight: 400; font-size: 1rem; margin-left: auto; }
 .nav-links {
   display: flex;
   gap: 0.25rem;
   list-style: none;
+  margin-left: auto;
 }
 .nav-links a {
   color: rgba(255,255,255,0.9);
