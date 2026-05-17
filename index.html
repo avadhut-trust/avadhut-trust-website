@@ -293,10 +293,9 @@ async function loadHomeReviews() {
     const q = query(collection(db, 'reviews'), orderBy('createdAt', 'desc'), limit(3));
     const snap = await getDocs(q);
     if (snap.empty) {
-      // Firebase मध्ये नसल्यास data.js वरून दाखवा
-      getReviews().slice(0, 3).forEach(r => { hr.innerHTML += reviewCard(r); });
-      return;
-    }
+  hr.innerHTML = '<p style="text-align:center;color:#999;grid-column:1/-1;">अजून कोणतेही अभिप्राय नाहीत.</p>';
+  return;
+}
     snap.forEach(d => {
       const r = d.data();
       hr.innerHTML += `
@@ -313,9 +312,8 @@ async function loadHomeReviews() {
         </div>`;
     });
   } catch (err) {
-    // error आल्यास data.js वरून दाखवा
-    getReviews().slice(0, 3).forEach(r => { hr.innerHTML += reviewCard(r); });
-  }
+  hr.innerHTML = '<p style="text-align:center;color:#999;">अभिप्राय लोड होऊ शकले नाहीत.</p>';
+}
 }
 
 // Home Udisht
