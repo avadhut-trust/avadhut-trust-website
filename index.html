@@ -9,6 +9,7 @@
   <meta name="google-site-verification" content="Vp3PA8jlEeQtsq3Hap2U6GT0veptZDy7Pi284vlmXLg" />
 </head>
 <body>
+
 <!-- NAV -->
 <nav>
   <div class="nav-inner">
@@ -351,11 +352,19 @@ async function loadHomeUdisht() {
   }
 }
 
+const btn = document.getElementById("menu-btn");
+const menu = document.getElementById("menu");
+
+btn.onclick = () => {
+  menu.classList.toggle("show");
+};
+
 loadHomeUdisht();
 loadFeaturedProducts();
 loadHomeEvents();
 loadHomeSadasy();
 loadHomeReviews();
 </script>
+<script src="scroll.js"></script>
 </body>
 </html>
