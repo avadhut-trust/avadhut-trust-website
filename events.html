@@ -88,12 +88,12 @@
 </nav>
 
 <div class="page-hero">
-  <h1>📅 आमचे कार्यक्रम</h1>
+  <h1> आमचे कार्यक्रम</h1>
   <p>अवधूत चिंतन गोशाळेचे कार्यक्रम</p>
 </div>
 
 <div class="event-tabs">
-  <button class="event-tab active" onclick="showEventTab('upcoming', this)">📅 येणारे कार्यक्रम</button>
+  <button class="event-tab active" onclick="showEventTab('upcoming', this)"> येणारे कार्यक्रम</button>
   <button class="event-tab" onclick="showEventTab('past', this)">✅ झालेले कार्यक्रम</button>
   <button class="event-tab" onclick="showEventTab('updates', this)">📢 Daily Updates</button>
 </div>
@@ -181,11 +181,11 @@ function renderEvents(events, containerId, showRegister) {
     return `
       <div class="event-card">
         <div class="event-img">
-          ${e.image ? `<img src="${e.image}" alt="${e.title}" />` : '📅'}
+          ${e.image ? `<img src="${e.image}" alt="${e.title}" />` : ''}
         </div>
         <div class="event-info">
           <div class="event-title">${e.title}</div>
-          <div class="event-date">📆 ${formatDate(e.date)}</div>
+          <div class="event-date"> ${formatDate(e.date)}</div>
           ${e.time ? `<div class="event-time">🕐 ${e.time}</div>` : ''}
           ${e.location ? `<div class="event-location">📍 ${e.location}</div>` : ''}
           ${e.desc ? `<div class="event-desc">${e.desc}</div>` : ''}
@@ -268,7 +268,7 @@ window.showEventTab = (tab, btn) => {
 window.openModal = (id, name) => {
   currentEventId = id;
   currentEventName = name;
-  document.getElementById('modalEventName').textContent = '📅 ' + name;
+  document.getElementById('modalEventName').textContent =  + name;
   document.getElementById('regName').value = '';
   document.getElementById('regPhone').value = '';
   document.getElementById('regCity').value = '';
