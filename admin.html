@@ -116,14 +116,14 @@ td { padding: 0.6rem; border-bottom: 1px solid #eee; vertical-align: middle; }
 <div class="form-row">
   <label>📷 उत्पादनाचा फोटो</label>
   <div class="photo-upload-box">
-    <input type="file" id="pPhotoFile" accept="image/*" onchange="uploadProductPhoto(this)" />
+    <input type="file" id="pPhotoFile" accept="image/*" onchange="uploadProductPhoto(this)" multiple />
     <div style="font-size:2rem;">📷</div>
     <div style="font-weight:600; color:#FF6F00;">फोटो निवडा</div>
     <div style="font-size:0.8rem; color:#999; margin-top:0.3rem;">Gallery मधून JPG, PNG निवडा</div>
   </div>
   <div class="upload-progress" id="pUploadProgress"><div class="upload-progress-bar" id="pProgressBar"></div></div>
   <div class="upload-status" id="pUploadStatus"></div>
-  <img id="pImagePreview" class="event-img-preview" />
+  <div id="pImagePreview" class="event-img-preview" />
   <input type="hidden" id="pImage" />
 </div>
 <div class="form-row"><label>Bestseller?</label>
