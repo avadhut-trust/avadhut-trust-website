@@ -153,7 +153,7 @@ td { padding: 0.6rem; border-bottom: 1px solid #eee; vertical-align: middle; }
 <div class="form-row">
   <label>📷 कार्यक्रमाचा फोटो</label>
   <div class="photo-upload-box">
-    <input type="file" id="ePhotoFile" accept="image/*" onchange="uploadEventPhoto(this)" />
+    <input type="file" accept="image/*" onchange="uploadEventPhoto(this)" multiple>
     <div style="font-size:2rem;">🖼️</div>
     <div style="font-weight:600; color:#FF6F00;">फोटो निवडा</div>
     <div style="font-size:0.8rem; color:#999; margin-top:0.3rem;">Gallery मधून JPG, PNG निवडा</div>
@@ -228,14 +228,15 @@ td { padding: 0.6rem; border-bottom: 1px solid #eee; vertical-align: middle; }
 <div class="form-row">
   <label>📷 मंदिराचा फोटो</label>
   <div class="photo-upload-box">
-    <input type="file" id="tPhotoFile" accept="image/*" onchange="uploadTemplePhoto(this)" />
+    <input type="file" accept="image/*" onchange="uploadTemplePhoto(this)" multiple>
+<div id="tImagePreview" style="display:none;"></div>
     <div style="font-size:2rem;">🛕</div>
     <div style="font-weight:600; color:#FF6F00;">फोटो निवडा</div>
     <div style="font-size:0.8rem; color:#999; margin-top:0.3rem;">Gallery मधून JPG, PNG निवडा</div>
   </div>
   <div class="upload-progress" id="tUploadProgress"><div class="upload-progress-bar" id="tProgressBar"></div></div>
   <div class="upload-status" id="tUploadStatus"></div>
-  <img id="tImagePreview" class="event-img-preview" />
+  <div id="tImagePreview" style="display:none;"></div>
   <input type="hidden" id="tImage" />
 </div>
 <button class="btn-saffron" id="tSaveBtn" onclick="saveTemple()">💾 मंदिर जोडा</button>
@@ -336,58 +337,111 @@ window.toggleReg = () => {
   label.style.color = isOn ? '#2E7D32' : '#999';
 };
 
-// ===== PHOTO UPLOAD =====
-function uploadPhoto(file, folder, progressBarId, progressDivId, statusId, previewId, hiddenInputId, saveBtn) {
-  if (!file) return;
+// ===== PHOTO UPLOAD (MULTIPLE FILES SUPPORT) =====
+function uploadPhoto(files, folder, progressBarId, progressDivId, statusId, previewId, hiddenInputId, saveBtn) {
+  if (!files || files.length === 0) return;
+
   const CLOUD_NAME = 'dvl3csahg';
   const UPLOAD_PRESET = 'avadhut-gosala';
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('upload_preset', UPLOAD_PRESET);
-  formData.append('folder', folder);
+
   document.getElementById(progressDivId).style.display = 'block';
   document.getElementById(statusId).style.display = 'block';
   document.getElementById(statusId).textContent = '⏳ अपलोड होत आहे...';
   document.getElementById(saveBtn).disabled = true;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const preview = document.getElementById(previewId);
-    preview.src = e.target.result;
-    preview.style.display = 'block';
-  };
-  reader.readAsDataURL(file);
-  const xhr = new XMLHttpRequest();
-  xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`);
-  xhr.upload.onprogress = (e) => {
-    if (e.lengthComputable) {
-      const pct = Math.round((e.loaded / e.total) * 100);
-      document.getElementById(progressBarId).style.width = pct + '%';
-      document.getElementById(statusId).textContent = `⏳ ${pct}% अपलोड...`;
+
+  // preview container रिकामा करा (जुने preview हटवा)
+  const previewContainer = document.getElementById(previewId);
+  previewContainer.innerHTML = '';
+  previewContainer.style.display = 'flex';
+  previewContainer.style.flexWrap = 'wrap';
+  previewContainer.style.gap = '8px';
+
+  const total = files.length;
+  let completed = 0;
+  let uploadedCount = 0;
+  const uploadedUrls = [];
+
+  Array.from(files).forEach((file, index) => {
+    // local preview (लगेच दिसण्यासाठी)
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      img.style.width = '90px';
+      img.style.height = '90px';
+      img.style.objectFit = 'cover';
+      img.style.borderRadius = '6px';
+      img.dataset.index = index;
+      previewContainer.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', UPLOAD_PRESET);
+    formData.append('folder', folder);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`);
+
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) {
+        const pct = Math.round((e.loaded / e.total) * 100);
+        // overall progress: प्रत्येक file साठी सरासरी टक्केवारी
+        const overallPct = Math.round(((completed + (pct / 100)) / total) * 100);
+        document.getElementById(progressBarId).style.width = overallPct + '%';
+        document.getElementById(statusId).textContent =
+          `⏳ Photo ${index + 1}/${total} - ${pct}% अपलोड...`;
+      }
+    };
+
+    xhr.onload = () => {
+      completed++;
+      try {
+        const res = JSON.parse(xhr.responseText);
+        if (res.secure_url) {
+          uploadedUrls[index] = res.secure_url;
+          uploadedCount++;
+        }
+      } catch (err) {
+        console.error('Parse error:', err);
+      }
+      checkIfDone();
+    };
+
+    xhr.onerror = () => {
+      completed++;
+      checkIfDone();
+    };
+
+    xhr.send(formData);
+  });
+
+  function checkIfDone() {
+    if (completed === total) {
+      // undefined slots काढून टाका (जे fail झाले)
+      const finalUrls = uploadedUrls.filter(u => u);
+      document.getElementById(hiddenInputId).value = JSON.stringify(finalUrls);
+      document.getElementById(progressBarId).style.width = '100%';
+
+      if (uploadedCount === total) {
+        document.getElementById(statusId).textContent = `✅ सर्व ${total} फोटो अपलोड झाले!`;
+      } else if (uploadedCount > 0) {
+        document.getElementById(statusId).textContent = `⚠️ ${uploadedCount}/${total} फोटो अपलोड झाले, काही अयशस्वी!`;
+      } else {
+        document.getElementById(statusId).textContent = '❌ अपलोड अयशस्वी!';
+      }
+      document.getElementById(saveBtn).disabled = false;
     }
-  };
-  xhr.onload = () => {
-    const res = JSON.parse(xhr.responseText);
-    if (res.secure_url) {
-      document.getElementById(hiddenInputId).value = res.secure_url;
-      document.getElementById(previewId).src = res.secure_url;
-      document.getElementById(statusId).textContent = '✅ फोटो अपलोड झाला!';
-    } else {
-      document.getElementById(statusId).textContent = '❌ अपलोड अयशस्वी!';
-    }
-    document.getElementById(saveBtn).disabled = false;
-  };
-  xhr.onerror = () => {
-    document.getElementById(statusId).textContent = '❌ Error आला!';
-    document.getElementById(saveBtn).disabled = false;
-  };
-  xhr.send(formData);
+  }
 }
 
-window.uploadEventPhoto = (input) => { uploadPhoto(input.files[0], 'events', 'eProgressBar', 'eUploadProgress', 'eUploadStatus', 'eImagePreview', 'eImage', 'eSaveBtn'); };
-window.uploadProductPhoto = (input) => { uploadPhoto(input.files[0], 'products', 'pProgressBar', 'pUploadProgress', 'pUploadStatus', 'pImagePreview', 'pImage', 'pSaveBtn'); };
-window.uploadSadasyPhoto = (input) => { uploadPhoto(input.files[0], 'sadasy', 'sProgressBar', 'sUploadProgress', 'sUploadStatus', 'sImagePreview', 'sImage', 'sSaveBtn'); };
-window.uploadTemplePhoto = (input) => { uploadPhoto(input.files[0], 'temples', 'tProgressBar', 'tUploadProgress', 'tUploadStatus', 'tImagePreview', 'tImage', 'tSaveBtn'); };
-
+// प्रत्येक handler आता input.files (पूर्ण FileList) पाठवतो, फक्त input.files[0] नाही
+window.uploadEventPhoto = (input) => { uploadPhoto(input.files, 'events', 'eProgressBar', 'eUploadProgress', 'eUploadStatus', 'eImagePreview', 'eImage', 'eSaveBtn'); };
+window.uploadProductPhoto = (input) => { uploadPhoto(input.files, 'products', 'pProgressBar', 'pUploadProgress', 'pUploadStatus', 'pImagePreview', 'pImage', 'pSaveBtn'); };
+window.uploadSadasyPhoto = (input) => { uploadPhoto(input.files, 'sadasy', 'sProgressBar', 'sUploadProgress', 'sUploadStatus', 'sImagePreview', 'sImage', 'sSaveBtn'); };
+window.uploadTemplePhoto = (input) => { uploadPhoto(input.files, 'temples', 'tProgressBar', 'tUploadProgress', 'tUploadStatus', 'tImagePreview', 'tImage', 'tSaveBtn'); };
+  
 // ===== PRODUCTS =====
 window.saveProduct = async () => {
   const name = document.getElementById('pName').value.trim();
