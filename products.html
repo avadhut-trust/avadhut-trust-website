@@ -205,11 +205,18 @@ function displayProducts(products) {
 
     let images = [];
 
+    let images = [];
+
+if (Array.isArray(p.image)) {
+    images = p.image;
+} 
+else {
     try {
-      images = JSON.parse(p.image || "[]");
+        images = JSON.parse(p.image || "[]");
     } catch {
-      images = p.image ? [p.image] : [];
+        images = p.image ? [p.image] : [];
     }
+}
 
     const mainImage = images.length ? images[0] : "";
 
