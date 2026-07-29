@@ -456,7 +456,8 @@ window.editProduct = async (id) => {
       document.getElementById("pPrice").value = p.price;
       document.getElementById("pMrp").value = p.mrp || "";
       document.getElementById("pWeight").value = p.weight || "";
-      document.getElementById("pImage").value = p.image || "";
+      document.getElementById("pImage").value =
+      Array.isArray(p.image) ? JSON.stringify(p.image) : (p.image || "");
       document.getElementById("pBestseller").value = p.bestseller ? "true" : "false";
 
       document.getElementById("pSaveBtn").textContent = "💾 Update करा";
@@ -486,7 +487,7 @@ window.updateProduct = async (id) => {
     document.getElementById(id).value = ""
   );
 
-  document.getElementById("pImage").value = "";
+  image: JSON.parse(document.getElementById("pImage").value || "[]"),
   document.getElementById("pSaveBtn").textContent = "💾 उत्पादन जोडा";
   document.getElementById("pSaveBtn").onclick = saveProduct;
 
@@ -509,7 +510,7 @@ window.saveProduct = async () => {
   });
   showToast('✅ उत्पादन जोडले!');
   ['pName','pPrice','pMrp','pDesc','pWeight'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('pImage').value = '';
+  image: JSON.parse(document.getElementById('pImage').value || "[]"),
   document.getElementById('pImagePreview').style.display = 'none';
   document.getElementById('pUploadProgress').style.display = 'none';
   document.getElementById('pUploadStatus').style.display = 'none';
