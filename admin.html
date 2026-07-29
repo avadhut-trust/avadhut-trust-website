@@ -525,12 +525,17 @@ async function loadProducts() {
   let html = '<table><thead><tr><th>फोटो</th><th>नाव</th><th>किंमत</th><th>श्रेणी</th><th>कृती</th></tr></thead><tbody>';
   snap.forEach(d => {
     const p = d.data();
-      let images = [];
+  
+    let images = [];
 
-try {
-    images = JSON.parse(p.image || "[]");
-} catch {
-    images = p.image ? [p.image] : [];
+if (Array.isArray(p.image)) {
+    images = p.image;
+} else {
+    try {
+        images = JSON.parse(p.image || "[]");
+    } catch {
+        images = p.image ? [p.image] : [];
+    }
 }
 
 const photoHtml = images.length
