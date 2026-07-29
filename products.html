@@ -176,7 +176,8 @@ async function loadProducts() {
       allProducts.push({ id: d.id, ...d.data() });
       if (d.data().category) categories.add(d.data().category);
     });
-
+     console.log(allProducts);
+    
     // Add category filters
     categories.forEach(cat => {
       const btn = document.createElement('button');
