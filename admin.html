@@ -443,6 +443,56 @@ window.uploadSadasyPhoto = (input) => { uploadPhoto(input.files, 'sadasy', 'sPro
 window.uploadTemplePhoto = (input) => { uploadPhoto(input.files, 'temples', 'tProgressBar', 'tUploadProgress', 'tUploadStatus', 'tImagePreview', 'tImage', 'tSaveBtn'); };
   
 // ===== PRODUCTS =====
+window.editProduct = async (id) => {
+  const snap = await getDocs(collection(db, "products"));
+
+  snap.forEach(d => {
+    if (d.id === id) {
+      const p = d.data();
+
+      document.getElementById("pName").value = p.name;
+      document.getElementById("pCategory").value = p.category;
+      document.getElementById("pDesc").value = p.desc || "";
+      document.getElementById("pPrice").value = p.price;
+      document.getElementById("pMrp").value = p.mrp || "";
+      document.getElementById("pWeight").value = p.weight || "";
+      document.getElementById("pImage").value = p.image || "";
+      document.getElementById("pBestseller").value = p.bestseller ? "true" : "false";
+
+      document.getElementById("pSaveBtn").textContent = "💾 Update करा";
+      document.getElementById("pSaveBtn").onclick = () => updateProduct(id);
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  });
+};
+
+window.updateProduct = async (id) => {
+
+  await updateDoc(doc(db, "products", id), {
+    name: document.getElementById("pName").value,
+    category: document.getElementById("pCategory").value,
+    desc: document.getElementById("pDesc").value,
+    price: Number(document.getElementById("pPrice").value),
+    mrp: Number(document.getElementById("pMrp").value) || 0,
+    weight: document.getElementById("pWeight").value,
+    image: document.getElementById("pImage").value,
+    bestseller: document.getElementById("pBestseller").value === "true"
+  });
+
+  showToast("✅ उत्पादन Update झाले!");
+
+  ["pName","pPrice","pMrp","pDesc","pWeight"].forEach(id =>
+    document.getElementById(id).value = ""
+  );
+
+  document.getElementById("pImage").value = "";
+  document.getElementById("pSaveBtn").textContent = "💾 उत्पादन जोडा";
+  document.getElementById("pSaveBtn").onclick = saveProduct;
+
+  loadProducts();
+};
+  
 window.saveProduct = async () => {
   const name = document.getElementById('pName').value.trim();
   const price = document.getElementById('pPrice').value;
@@ -479,7 +529,10 @@ async function loadProducts() {
       <td><strong>${p.name}</strong><br><small>${p.desc?.substring(0,40) || ''}</small></td>
       <td>₹${p.price}<br><small style="text-decoration:line-through;color:#999;">₹${p.mrp}</small></td>
       <td>${p.category}</td>
-      <td><button class="btn-danger" onclick="deleteProduct('${d.id}')">🗑️ काढा</button></td>
+      <td>
+        <button class="btn-edit" onclick="editProduct('${d.id}')">✏️ Edit</button>
+         <button class="btn-danger" onclick="deleteProduct('${d.id}')">🗑️ काढा</button>
+      </td>
     </tr>`;
   });
   html += '</tbody></table>';
