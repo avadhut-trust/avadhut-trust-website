@@ -524,8 +524,22 @@ async function loadProducts() {
   let html = '<table><thead><tr><th>फोटो</th><th>नाव</th><th>किंमत</th><th>श्रेणी</th><th>कृती</th></tr></thead><tbody>';
   snap.forEach(d => {
     const p = d.data();
+      let images = [];
+
+try {
+    images = JSON.parse(p.image || "[]");
+} catch {
+    images = p.image ? [p.image] : [];
+}
+
+const photoHtml = images.length
+    ? images.map(img => `
+        <img src="${img}" class="product-img"
+             style="margin:2px;">
+      `).join("")
+    : "📦";
     html += `<tr>
-      <td>${p.image ? `<img src="${p.image}" class="product-img" />` : '📦'}</td>
+    <td>${photoHtml}</td>
       <td><strong>${p.name}</strong><br><small>${p.desc?.substring(0,40) || ''}</small></td>
       <td>₹${p.price}<br><small style="text-decoration:line-through;color:#999;">₹${p.mrp}</small></td>
       <td>${p.category}</td>
